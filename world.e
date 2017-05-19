@@ -11,17 +11,15 @@ create
 	make
 
 feature {NONE}
-	make(rows, cols, l: NATURAL_32)
+	make(rows, cols, l: INTEGER_32; surf: GAME_SURFACE)
 		local
 			cur_row:  WORLD_CELL
 			prev_row: WORLD_CELL
-			i: NATURAL_32
 		do
 			prev_row := Void
-			from i := 0
-				until i >= rows
+			across 0 |..| (cols - 1) as i
 				loop
-					cur_row := make_row	(0, l * i, l, cols)
+					cur_row := make_row	(0, l * i.item, l, cols)
 					if top_left = Void then
 						top_left := cur_row
 					end
@@ -29,25 +27,27 @@ feature {NONE}
 						glue (p, cur_row)
 					end
 					prev_row := cur_row
-					i := i + 1
 				end
+
+			surface := surf
+			create bg_color.make_rgb (0, 0, 0)
 		end
 
 	top_left: detachable WORLD_CELL
+	surface: GAME_SURFACE
+	bg_color: GAME_COLOR
 
-	make_row(x_offset, y_offset, l, num: NATURAL_32): detachable WORLD_CELL
+	make_row(x_offset, y_offset, l, num: INTEGER_32): detachable WORLD_CELL
 		local
 			first: detachable WORLD_CELL
 			cur:              WORLD_CELL
 			prev:  detachable WORLD_CELL
-			i: NATURAL_32
 		do
 			prev := Void
 			first := Void
-			from i := 0
-				until i >= num
+			across 0 |..| (num - 1) as i
 				loop
-					create cur.make (x_offset + l * i, y_offset, l, l)
+					create cur.make (x_offset + l * i.item, y_offset, l, l)
 					if first = Void then
 						first := cur
 					end
@@ -56,7 +56,6 @@ feature {NONE}
 						p.set_right (cur)
 					end
 					prev := cur
-					i := i + 1
 				end
 			Result := first
 		end
@@ -75,5 +74,71 @@ feature {NONE}
 					cur_u := cur_u.right
 					cur_l := cur_l.right
 				end
+		end
+
+feature
+	draw: GAME_SURFACE
+		local
+			cur_row: WORLD_CELL
+			cur:     WORLD_CELL
+		do
+			-- reset background
+			surface.draw_rectangle (bg_color, 0, 0, surface.width, surface.height)
+
+			from cur_row := top_left
+				until cur_row = Void
+				loop
+					from cur := cur_row
+						until cur = Void
+						loop
+							cur.draw(surface)
+							cur := cur.right
+						end
+					cur_row := cur_row.down
+				end
+
+			Result := surface
+		end
+
+	put_at(x, y: INTEGER_32; drawable: DRAWABLE)
+		local
+			cur: WORLD_CELL
+		do
+			cur := top_left
+			across 1 |..| x as i
+				loop
+					if attached cur as c then
+						cur := c.right
+					end
+				end
+			across 1 |..| y as i
+				loop
+					if attached cur as c then
+						cur := cur.down
+					end
+				end
+			if attached cur as c then
+				c.add_content(drawable)
+			end
+		end
+
+	cell_at(x, y: INTEGER_32): detachable WORLD_CELL
+		local
+			cur: WORLD_CELL
+		do
+			cur := top_left
+			across 1 |..| x as i
+				loop
+					if attached cur as c then
+						cur := c.right
+					end
+				end
+			across 1 |..| y as i
+				loop
+					if attached cur as c then
+						cur := cur.down
+					end
+				end
+			Result := cur
 		end
 end

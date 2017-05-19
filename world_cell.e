@@ -11,7 +11,7 @@ create
 	make
 
 feature {NONE}
-	make(xx, yy, ww, hh: NATURAL_32)
+	make(xx, yy, ww, hh: INTEGER_32)
 		do
 			x := xx
 			y := yy
@@ -23,16 +23,20 @@ feature {NONE}
 			up    := Void
 			down  := Void
 
-			io.put_natural_32 (xx)
-			io.put_string (" ")
-			io.put_natural_32 (yy)
-			io.put_new_line
+			create contents.make
+
+--			io.put_natural_32 (xx)
+--			io.put_string (" ")
+--			io.put_natural_32 (yy)
+--			io.put_new_line
 		end
 
-	x: NATURAL_32
-	y: NATURAL_32
-	w: NATURAL_32
-	h: NATURAL_32
+	x: INTEGER_32
+	y: INTEGER_32
+	w: INTEGER_32
+	h: INTEGER_32
+
+	contents: LINKED_LIST [DRAWABLE]
 
 feature
 	left:  detachable WORLD_CELL
@@ -58,5 +62,28 @@ feature
 	set_down(d: WORLD_CELL)
 		do
 			down := d
+		end
+
+	add_content(content: DRAWABLE)
+		do
+			io.put_string("add content")
+			io.put_new_line
+			content.set_cell(Current)
+			contents.extend (content)
+		end
+
+	remove_content(content: DRAWABLE)
+		do
+			contents.start
+			contents.prune (content)
+		end
+
+	draw(surface: GAME_SURFACE)
+		do
+--			surface.draw_rectangle (create {GAME_COLOR}.make_rgb (255, 255, 255), x+1, y+1, w-2, h-2)
+			across contents as content
+				loop
+					content.item.draw (x, y, surface)
+				end
 		end
 end
