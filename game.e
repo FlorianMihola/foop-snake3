@@ -30,11 +30,11 @@ feature {NONE}
 			mech_queue := 0
 			mech_step := 100
 			game_state := "setup"
-			snake_length := 10
+			snake_length := 5
 			world_cols := 100
-			world_rows := 70
+			world_rows := 60
 
-			snake_pos_offset := 20
+			snake_pos_offset := 10
 
 			-- setup window
 			create window_builder
@@ -46,19 +46,30 @@ feature {NONE}
 			-- setup game world etc
 			create world.make (world_rows, world_cols, l) --, surface)
 
-			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 255))
-			player1_start_cell := world.cell_at (snake_pos_offset + snake_length, snake_pos_offset)
+			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 0))
+			player1_start_cell := world.cell_at (snake_pos_offset + snake_length - 1, snake_pos_offset - 1)
 			if attached player1_start_cell as p1sc then
 				player1.set_cell (p1sc, create {DIRECTION}.make_left)
 			end
 			player1_controller := create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make)
+--			player1_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player1, create {DIRECTION}.make_down)
 
 			create player2.make(l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (255, 0, 0))
-			player2_start_cell := world.cell_at (world_cols - snake_pos_offset - snake_length, world_rows - snake_pos_offset)
+			player2_start_cell := world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 1)
 			if attached player2_start_cell as p2sc then
 				player2.set_cell (p2sc, create {DIRECTION}.make_right)
 			end
-			player2_controller := create {MIRROR_CONTROLLER}.make (player1_controller)
+--			player2_controller := create {MIRROR_CONTROLLER}.make (player1_controller)
+			player2_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up)
+
+			create block1.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+			block1.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 20))
+			create block2.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+			block2.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 21))
+			create block3.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+			block3.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 22))
+			create block4.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+			block4.move (world.cell_at (0, world_rows - snake_pos_offset + 5))
 
 			-- setup input etc
 			game_library.quit_signal_actions.extend (agent on_quit)
@@ -82,6 +93,12 @@ feature {NONE}
 
 	player2: SNAKE
 	player2_controller: CONTROLLER
+
+	block1: BLOCK
+	block2: BLOCK
+	block3: BLOCK
+	block4: BLOCK
+
 
 	mech_step:             NATURAL_32
 	mech_queue:            NATURAL_32

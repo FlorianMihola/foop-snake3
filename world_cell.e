@@ -98,6 +98,11 @@ feature
 			Result := others
 		end
 
+	empty: BOOLEAN
+		do
+			Result := contents.empty
+		end
+
 	draw(surface: GAME_SURFACE)
 		do
 			if dirty then

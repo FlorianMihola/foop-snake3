@@ -17,7 +17,7 @@ feature {NONE}
 			prev_row: WORLD_CELL
 		do
 			prev_row := Void
-			across 0 |..| (cols - 1) as i
+			across 0 |..| (rows - 1) as i
 				loop
 					cur_row := make_row	(0, l * i.item, l, cols)
 					if top_left = Void then

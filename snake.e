@@ -76,8 +76,10 @@ feature
 			Result := head.status
 		end
 
-feature {NONE}
+feature {AVOIDING_LEFT_CONTROLLER}
 	head: SNAKE_HEAD
 
+feature {NONE}
 	segments: LINKED_LIST [BODY_SEGMENT]
+
 end

@@ -16,6 +16,7 @@ inherit
 
 create
 	make
+
 feature {NONE}
 	controller: CONTROLLER
 	prev_dir: DIRECTION
@@ -55,4 +56,5 @@ feature
 		do
 			controller.on_key_down (timestamp, key_state)
 		end
+
 end

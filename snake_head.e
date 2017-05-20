@@ -67,6 +67,7 @@ feature
 						movement_status := "bumped into wall"
 					end
 				else
+					print ("Invalid direction%N")
 					movement_status := "invalid"
 				end
 			end

@@ -33,10 +33,10 @@ feature
 		do
 			if key_state.is_w then
 				direction := create {DIRECTION}.make_up
-			elseif key_state.is_s then
-				direction := create {DIRECTION}.make_down
 			elseif key_state.is_a then
 				direction := create {DIRECTION}.make_left
+			elseif key_state.is_s then
+				direction := create {DIRECTION}.make_down
 			elseif key_state.is_d then
 				direction := create {DIRECTION}.make_right
 			end
