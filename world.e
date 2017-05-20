@@ -11,7 +11,7 @@ create
 	make
 
 feature {NONE}
-	make(rows, cols, l: INTEGER_32; surf: GAME_SURFACE)
+	make(rows, cols, l: INTEGER_32)
 		local
 			cur_row:  WORLD_CELL
 			prev_row: WORLD_CELL
@@ -29,12 +29,11 @@ feature {NONE}
 					prev_row := cur_row
 				end
 
-			surface := surf
 			create bg_color.make_rgb (0, 0, 0)
 		end
 
 	top_left: detachable WORLD_CELL
-	surface: GAME_SURFACE
+
 	bg_color: GAME_COLOR
 
 	make_row(x_offset, y_offset, l, num: INTEGER_32): detachable WORLD_CELL
@@ -77,14 +76,11 @@ feature {NONE}
 		end
 
 feature
-	draw: GAME_SURFACE
+	draw(surface: GAME_SURFACE)
 		local
 			cur_row: WORLD_CELL
 			cur:     WORLD_CELL
 		do
-			-- reset background
-			surface.draw_rectangle (bg_color, 0, 0, surface.width, surface.height)
-
 			from cur_row := top_left
 				until cur_row = Void
 				loop
@@ -96,8 +92,6 @@ feature
 						end
 					cur_row := cur_row.down
 				end
-
-			Result := surface
 		end
 
 	put_at(x, y: INTEGER_32; drawable: DRAWABLE)

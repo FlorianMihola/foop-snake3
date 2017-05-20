@@ -14,14 +14,15 @@ create
 	make
 
 feature
-	make(ll: INTEGER_32)
+	make(ll: INTEGER_32; col: GAME_COLOR)
 		do
 			l := ll
+			color := col
 		end
 
 	draw(x_offset, y_offset: INTEGER_32; surface: GAME_SURFACE)
 		do
-			surface.draw_rectangle (create {GAME_COLOR}.make_rgb (0, 200, 200), x_offset + 3, y_offset + 3, l - 6, l - 6)
+			surface.draw_rectangle (color, x_offset + 3, y_offset + 3, l - 6, l - 6)
 		end
 
 	move(new_cell: detachable WORLD_CELL)
@@ -37,4 +38,5 @@ feature
 feature {NONE}
 	l: INTEGER_32
 
+	color: GAME_COLOR
 end

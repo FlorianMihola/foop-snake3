@@ -1,14 +1,18 @@
 note
-	description: "Summary description for {KEYBOARD_CONTROLLER}."
+	description: "Summary description for {VUIA_CONTROLLER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	KEYBOARD_CONTROLLER
+	WASD_CONTROLLER
 
 inherit
 	CONTROLLER
+		redefine
+			on_key_up,
+			on_key_down
+		end
 
 create
 	make
@@ -16,7 +20,7 @@ create
 feature
 	make
 		do
-			direction := create {DIRECTION}.make_right
+			direction := create {DIRECTION}.make_down
 		end
 
 	direction: DIRECTION
@@ -27,13 +31,13 @@ feature
 
 	on_key_down(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
 		do
-			if key_state.is_v then
+			if key_state.is_w then
 				direction := create {DIRECTION}.make_up
-			elseif key_state.is_i then
+			elseif key_state.is_s then
 				direction := create {DIRECTION}.make_down
-			elseif key_state.is_u then
-				direction := create {DIRECTION}.make_left
 			elseif key_state.is_a then
+				direction := create {DIRECTION}.make_left
+			elseif key_state.is_d then
 				direction := create {DIRECTION}.make_right
 			end
 		end

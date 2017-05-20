@@ -18,6 +18,9 @@ feature {NONE}
 			w := ww
 			h := hh
 
+			bg_color := create {GAME_COLOR}.make_rgb (0, 0, 0)
+			dirty := True
+
 			left  := Void
 			right := Void
 			up    := Void
@@ -37,6 +40,10 @@ feature {NONE}
 	h: INTEGER_32
 
 	contents: LINKED_LIST [DRAWABLE]
+
+	bg_color: GAME_COLOR
+
+	dirty: BOOLEAN
 
 feature
 	left:  detachable WORLD_CELL
@@ -66,8 +73,8 @@ feature
 
 	add_content(content: DRAWABLE)
 		do
-			io.put_string("add content")
-			io.put_new_line
+--			io.put_string("add content")
+--			io.put_new_line
 			content.set_cell(Current)
 			contents.extend (content)
 		end
@@ -78,11 +85,29 @@ feature
 			contents.prune (content)
 		end
 
+	other_content(content: DRAWABLE): LINKED_LIST [DRAWABLE]
+		local
+			others: LINKED_LIST [DRAWABLE]
+		do
+			create others.make
+			others.copy (contents)
+--			print ("others copied")
+--			print (others)
+			others.start
+			others.prune (content)
+			Result := others
+		end
+
 	draw(surface: GAME_SURFACE)
 		do
---			surface.draw_rectangle (create {GAME_COLOR}.make_rgb (255, 255, 255), x+1, y+1, w-2, h-2)
+			if dirty then
+				surface.draw_rectangle (bg_color, x, y, w, h)
+			end
+			dirty := False
+
 			across contents as content
 				loop
+					dirty := True
 					content.item.draw (x, y, surface)
 				end
 		end
