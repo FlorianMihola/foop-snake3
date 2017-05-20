@@ -1,7 +1,10 @@
+A simple snake game in Eiffel. Work In Progress!
+
 # Build
 
 1. Install EiffelStudio
-2. Install Eiffel_Game2
+2. Install [Eiffel_Game2](https://github.com/tioui/Eiffel_Game2)  
+   (Do not forget to clone the git repository recursively!)
 3. Open foop-snake.ecf
 4. Build (F7)
 
