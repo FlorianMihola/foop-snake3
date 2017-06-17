@@ -9,10 +9,6 @@ class
 
 inherit
 	CONTROLLER
-		redefine
-			on_key_up,
-			on_key_down
-		end
 
 create
 	make
@@ -29,13 +25,5 @@ feature
 	direction: DIRECTION
 		do
 			Result := controller.direction.opposite
-		end
-
-	on_key_up(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
-		do
-		end
-
-	on_key_down(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
-		do
 		end
 end

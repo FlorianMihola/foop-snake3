@@ -46,30 +46,61 @@ feature {NONE}
 			-- setup game world etc
 			create world.make (world_rows, world_cols, l) --, surface)
 
+			-- player 1
 			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 0))
 			player1_start_cell := world.cell_at (snake_pos_offset + snake_length - 1, snake_pos_offset - 1)
 			if attached player1_start_cell as p1sc then
 				player1.set_cell (p1sc, create {DIRECTION}.make_left)
 			end
 			player1_controller := create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make)
+			player1.set_controller (player1_controller)
 --			player1_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player1, create {DIRECTION}.make_down)
 
-			create player2.make(l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (255, 0, 0))
-			player2_start_cell := world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 1)
+			-- player 2
+			create player2.make(l, 30, create {GAME_COLOR}.make_rgb (255, 0, 0))
+			-- player2_start_cell := world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 1)
+			player2_start_cell := world.cell_at (snake_pos_offset + snake_length - 1 + 3, snake_pos_offset - 3)
 			if attached player2_start_cell as p2sc then
-				player2.set_cell (p2sc, create {DIRECTION}.make_right)
+				player2.set_cell (p2sc, create {DIRECTION}.make_down)
 			end
 --			player2_controller := create {MIRROR_CONTROLLER}.make (player1_controller)
 			player2_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up)
+			player2.set_controller (player2_controller)
 
-			create block1.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
-			block1.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 20))
-			create block2.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
-			block2.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 21))
-			create block3.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
-			block3.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 22))
-			create block4.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
-			block4.move (world.cell_at (0, world_rows - snake_pos_offset + 5))
+			if attached world.cell_at (10, 10) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (10, 11) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (10, 12) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+
+			if attached world.cell_at (30, 10) as wc then
+				wc.add_content (create {SHRINKING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (30, 11) as wc then
+				wc.add_content (create {SHRINKING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (30, 12) as wc then
+				wc.add_content (create {SHRINKING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+
+			if attached world.cell_at (60, 10) as wc then
+				wc.add_content (create {HEALING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
+			end
+			if attached world.cell_at (60, 12) as wc then
+				wc.add_content (create {POISON}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
+			end
+--			create block1.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+--			block1.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 20))
+--			create block2.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+--			block2.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 21))
+--			create block3.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+--			block3.move (world.cell_at (world_cols - snake_pos_offset - snake_length - 1, world_rows - snake_pos_offset - 22))
+--			create block4.make (l, create {GAME_COLOR}.make_rgb (255, 255, 255))
+--			block4.move (world.cell_at (0, world_rows - snake_pos_offset + 5))
 
 			-- setup input etc
 			game_library.quit_signal_actions.extend (agent on_quit)
@@ -94,11 +125,10 @@ feature {NONE}
 	player2: SNAKE
 	player2_controller: CONTROLLER
 
-	block1: BLOCK
-	block2: BLOCK
-	block3: BLOCK
-	block4: BLOCK
-
+--	block1: BLOCK
+--	block2: BLOCK
+--	block3: BLOCK
+--	block4: BLOCK
 
 	mech_step:             NATURAL_32
 	mech_queue:            NATURAL_32
@@ -155,22 +185,25 @@ feature {NONE}
 				until mech_queue < mech_step
 				loop
 					if game_state.is_equal ("running") then
-						player1.move (player1_controller.direction)
-						player2.move (player2_controller.direction)
+						player1.move
+						player2.move
 
-						if player1.status.is_equal("dead") and player2.status.is_equal("dead") then
-							io.put_string ("Both players died. It's a draw!")
-							io.put_new_line
-							game_state := "halted"
-						elseif player1.status.is_equal("dead") then
-							io.put_string ("Player 1 is dead. Player 2 wins!")
-							io.put_new_line
-							game_state := "halted"
-						elseif player2.status.is_equal("dead") then
-							io.put_string ("Player 2 is dead. Player 1 wins!")
-							io.put_new_line
-							game_state := "halted"
-						end
+						player1.update -- move (player1_controller.direction)
+						player2.update -- move (player2_controller.direction)
+
+--						if player1.status.is_equal("dead") and player2.status.is_equal("dead") then
+--							io.put_string ("Both players died. It's a draw!")
+--							io.put_new_line
+--							game_state := "halted"
+--						elseif player1.status.is_equal("dead") then
+--							io.put_string ("Player 1 is dead. Player 2 wins!")
+--							io.put_new_line
+--							game_state := "halted"
+--						elseif player2.status.is_equal("dead") then
+--							io.put_string ("Player 2 is dead. Player 1 wins!")
+--							io.put_new_line
+--							game_state := "halted"
+--						end
 					end
 					mech_queue := mech_queue - mech_step
 				end

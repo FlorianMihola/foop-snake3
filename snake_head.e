@@ -9,16 +9,20 @@ class
 
 inherit
 	DRAWABLE
+		redefine
+			bite
+		end
 --	UPDATABLE
 
 create
 	make
 
 feature
-	make(ll: INTEGER_32; col: GAME_COLOR)
+	make(ll: INTEGER_32; col: GAME_COLOR; s: SNAKE)
 		do
 			l := ll
 			color := col
+			snake := s
 			movement_status := "ok"
 		end
 
@@ -35,7 +39,10 @@ feature
 --		end
 
 	move(direction: DIRECTION)
+		local
+			prev_cell: detachable WORLD_CELL
 		do
+			prev_cell := cell
 			movement_status := "ok"
 			if attached cell as c then
 				if direction.is_left then
@@ -71,12 +78,26 @@ feature
 					movement_status := "invalid"
 				end
 			end
-		end
 
---	set_controller(control: CONTROLLER)
---		do
---			controller := control
---		end
+			if movement_status.is_equal("ok") then
+				if attached prev_cell as pc then
+					if attached successor as s then
+						s.move (pc)
+					else
+						if grow_by > 0 then
+							successor := create {BODY_SEGMENT}.make (l, color, snake)
+							if attached successor as s then
+								s.grow (grow_by - 1)
+								s.move (pc)
+								grow_by := 0
+							else
+								-- todo: panic!
+							end
+						end
+					end
+				end
+			end
+		end
 
 	status: STRING
 		local
@@ -88,13 +109,60 @@ feature
 				others := c.other_content (Current)
 --				print ("others in snake_head.status")
 --				print (others)
-				if others.empty then
+				if others.is_empty then
 					Result := "ok"
 				else
 					Result := "dead"
 				end
 			else
 				Result := "invalid"
+			end
+		end
+
+	bite (force: NATURAL_32): EFFECT
+		do
+			print("snake head bitten")
+
+			snake.bite(force)
+
+			Result := create {NO_EFFECT}.make
+		end
+
+	update
+		local
+			others: LINKED_LIST [DRAWABLE]
+		do
+			if attached cell as c then
+				others := c.other_content (Current)
+				from
+					others.start
+				until
+					others.exhausted
+				loop
+					others.item.bite (10).affect (snake) -- todo: calculate force
+					others.forth
+				end
+			end
+		end
+
+	grow (growth: INTEGER_32)
+		do
+			grow_by := grow_by + growth
+			if attached successor as s then
+				if grow_by + s.successors < 0 then
+					s.die
+					successor := Void
+				else
+					s.grow (grow_by)
+				end
+				grow_by := 0
+			else
+				io.put_string ("growth ")
+				io.put_integer_32 (grow_by)
+				io.put_new_line
+			end
+			if grow_by < 0 then
+				grow_by:= 0 -- do not "save" negative growth	
 			end
 		end
 
@@ -105,5 +173,8 @@ feature {NONE}
 
 	movement_status: STRING -- TODO
 
---	controller: detachable CONTROLLER
+	snake: SNAKE
+
+	successor: detachable BODY_SEGMENT
+	grow_by: INTEGER_32
 end

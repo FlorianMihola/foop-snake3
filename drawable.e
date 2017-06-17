@@ -19,4 +19,8 @@ feature
 
 	cell: detachable WORLD_CELL
 
+	bite (force: NATURAL_32): EFFECT
+		do
+			Result := create {NO_EFFECT}.make
+		end
 end

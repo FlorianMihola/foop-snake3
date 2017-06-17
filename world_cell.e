@@ -100,7 +100,7 @@ feature
 
 	empty: BOOLEAN
 		do
-			Result := contents.empty
+			Result := contents.is_empty
 		end
 
 	draw(surface: GAME_SURFACE)
