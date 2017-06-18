@@ -121,8 +121,6 @@ feature
 
 	bite (force: NATURAL_32): EFFECT
 		do
-			print("snake head bitten")
-
 			snake.bite(force)
 
 			Result := create {NO_EFFECT}.make
@@ -156,10 +154,6 @@ feature
 					s.grow (grow_by)
 				end
 				grow_by := 0
-			else
-				io.put_string ("growth ")
-				io.put_integer_32 (grow_by)
-				io.put_new_line
 			end
 			if grow_by < 0 then
 				grow_by:= 0 -- do not "save" negative growth	

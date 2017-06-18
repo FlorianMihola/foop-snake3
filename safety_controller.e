@@ -8,17 +8,12 @@ class
 	SAFETY_CONTROLLER
 
 inherit
-	CONTROLLER
-		redefine
-			on_key_up,
-			on_key_down
-		end
+	WRAPPING_CONTROLLER
 
 create
 	make
 
 feature {NONE}
-	controller: CONTROLLER
 	prev_dir: DIRECTION
 
 feature
@@ -45,16 +40,6 @@ feature
 
 			prev_dir := new_dir
 			Result := new_dir
-		end
-
-	on_key_up(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
-		do
-			controller.on_key_up (timestamp, key_state)
-		end
-
-	on_key_down(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
-		do
-			controller.on_key_down (timestamp, key_state)
 		end
 
 end

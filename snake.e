@@ -14,62 +14,23 @@ feature
 	make(l: INTEGER_32; num: NATURAL_32; col: GAME_COLOR)
 		do
 			create head.make (l, col, Current)
+			create effects.make
+			create name.make_empty
 			head.grow ((num - 1).as_integer_32)
---			create segments.make
 			health := 50
---			across 1 |..| num.as_integer_32 as i
---				loop
---					segments.extend (create {BODY_SEGMENT}.make (l, col, Current))
---				end
 		end
 
 	do_move(direction: DIRECTION)
 		local
-			cur_cell: WORLD_CELL
 			prev_cell: WORLD_CELL
 		do
 			prev_cell := head.cell
 			head.move (direction)
---			across segments as i
---				loop
---					cur_cell := i.item.cell
---					i.item.move (prev_cell)
---					prev_cell := cur_cell
---				end
 		end
 
 	set_cell(head_cell: WORLD_CELL; direction: DIRECTION)
-		local
-			cur_cell: WORLD_CELL
-			cur_segment: BODY_SEGMENT
 		do
 			head_cell.add_content (head)
-			cur_cell := head_cell
---			across segments as i
---				loop
---					cur_segment := i.item
---					if direction.is_left then
---						if attached cur_cell.left as left then
---							cur_cell := left
---							cur_cell.add_content (cur_segment)
---						end
---					elseif direction.is_right then
---						if attached cur_cell.right as right then
---							cur_cell := right
---							cur_cell.add_content (cur_segment)
---						end
---					elseif direction.is_up then
---						if attached cur_cell.up as up then
---							cur_cell := up
---							cur_cell.add_content (cur_segment)
---						end
---					elseif direction.is_down then
---						if attached cur_cell.down as down then
---							cur_cell := down
---							cur_cell.add_content (cur_segment)
---						end
---					end
---				end
 		end
 
 	status: STRING -- TODO: Replace STRINGs with something safer
@@ -86,12 +47,28 @@ feature
 		do
 			if attached controller as c then
 				c.step
-				do_move (c.direction)
+				if not c.direction.is_stop then
+					do_move (c.direction)
+				end
 			end
 		end
 
 	update
+		local
+			reverts: LINKED_LIST[EFFECT]
 		do
+			effects.step
+
+			reverts := effects.due
+			from reverts.start
+			until reverts.exhausted
+			loop
+--				io.put_string ("reverting ")
+--				print(reverts.item)
+--				io.put_new_line
+				reverts.item.revert (Current)
+				reverts.forth
+			end
 			head.update
 		end
 
@@ -115,11 +92,23 @@ feature
 			health := health + h
 		end
 
+	set_name(n: STRING)
+		do
+			name := n
+		end
+
+	name: STRING
+
+	add_effect(effect: EFFECT)
+		do
+			effects.add (effect)
+		end
+
 feature {AVOIDING_LEFT_CONTROLLER}
 	head: SNAKE_HEAD
 
 feature {NONE}
---	segments: LINKED_LIST [BODY_SEGMENT]
-
 	health: INTEGER_32
+
+	effects: EFFECTS_QUEUE
 end

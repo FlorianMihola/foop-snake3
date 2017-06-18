@@ -79,10 +79,6 @@ feature
 					s.grow (grow_by)
 				end
 				grow_by := 0
-			else
-				io.put_string ("growth (bs) ")
-				io.put_integer_32 (grow_by)
-				io.put_new_line
 			end
 		end
 

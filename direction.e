@@ -15,7 +15,8 @@ create
 	make_right,
 	make_up,
 	make_down,
-	make_undefined
+	make_undefined,
+	make_stop
 
 feature {DIRECTION}
 	enum: NATURAL_8
@@ -38,6 +39,11 @@ feature {DIRECTION}
 	make_down
 		do
 			enum := 4
+		end
+
+	make_stop
+		do
+			enum := 5
 		end
 
 	make_undefined
@@ -63,6 +69,8 @@ feature
 				Result := create {DIRECTION}.make_down
 			elseif enum = 4 then
 				Result := create {DIRECTION}.make_up
+			elseif enum = 5 then
+				Result := create {DIRECTION}.make_stop -- stop's opposite is stop itself
 			end
 		end
 
@@ -84,6 +92,11 @@ feature
 	is_down: BOOLEAN
 		do
 			Result := (enum = 4)
+		end
+
+	is_stop: BOOLEAN
+		do
+			Result := (enum = 5)
 		end
 
 end

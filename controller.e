@@ -23,4 +23,22 @@ feature
 	step
 		do
 		end
+
+	unpack: CONTROLLER
+		do
+			Result := Current
+		end
+
+	force (d: DIRECTION)
+		do
+		end
+
+	set_steps (s: NATURAL_32)
+		do
+		end
+
+	steps: NATURAL_32
+		do
+			Result := 1
+		end
 end

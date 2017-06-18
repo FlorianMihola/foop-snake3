@@ -10,8 +10,8 @@ class
 inherit
 	CONTROLLER
 		redefine
-			on_key_up,
-			on_key_down
+			on_key_down,
+			force
 		end
 
 create
@@ -24,10 +24,6 @@ feature
 		end
 
 	direction: DIRECTION
-
-	on_key_up(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
-		do
-		end
 
 	on_key_down(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
 		do
@@ -42,4 +38,8 @@ feature
 			end
 		end
 
+	force (d: DIRECTION)
+		do
+			direction := d
+		end
 end
