@@ -11,15 +11,15 @@ create
 	make
 
 feature {NONE}
-	make(xx, yy, ww, hh: INTEGER_32)
+	make(wrld: WORLD; xx, yy, ww, hh: INTEGER_32)
 		do
 			x := xx
 			y := yy
 			w := ww
 			h := hh
+			world := wrld
 
 			bg_color := create {GAME_COLOR}.make_rgb (0, 0, 0)
-			dirty := True
 
 			left  := Void
 			right := Void
@@ -39,11 +39,11 @@ feature {NONE}
 	w: INTEGER_32
 	h: INTEGER_32
 
+	world: WORLD
+
 	contents: LINKED_LIST [DRAWABLE]
 
 	bg_color: GAME_COLOR
-
-	dirty: BOOLEAN
 
 feature
 	left:  detachable WORLD_CELL
@@ -77,12 +77,14 @@ feature
 --			io.put_new_line
 			content.set_cell(Current)
 			contents.extend (content)
+			world.add_dirty (Current)
 		end
 
 	remove_content(content: DRAWABLE)
 		do
 			contents.start
 			contents.prune (content)
+			world.add_dirty (Current)
 		end
 
 	other_content(content: DRAWABLE): LINKED_LIST [DRAWABLE]
@@ -105,15 +107,11 @@ feature
 
 	draw(surface: GAME_SURFACE)
 		do
-			if dirty then
-				surface.draw_rectangle (bg_color, x, y, w, h)
-			end
-			dirty := False
+			surface.draw_rectangle (bg_color, x, y, w, h)
 
 			across contents as content
-				loop
-					dirty := True
-					content.item.draw (x, y, surface)
-				end
+			loop
+				content.item.draw (x, y, surface)
+			end
 		end
 end

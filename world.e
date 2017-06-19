@@ -4,37 +4,15 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	WORLD
 
-create
-	make
-
 feature {NONE}
-	make(rows, cols, l: INTEGER_32)
-		local
-			cur_row:  WORLD_CELL
-			prev_row: WORLD_CELL
-		do
-			prev_row := Void
-			across 0 |..| (rows - 1) as i
-				loop
-					cur_row := make_row	(0, l * i.item, l, cols)
-					if top_left = Void then
-						top_left := cur_row
-					end
-					if attached prev_row as p then
-						glue (p, cur_row)
-					end
-					prev_row := cur_row
-				end
-
-			create bg_color.make_rgb (0, 0, 0)
-		end
-
 	top_left: detachable WORLD_CELL
 
 	bg_color: GAME_COLOR
+
+	dirties: LINKED_SET[WORLD_CELL]
 
 	make_row(x_offset, y_offset, l, num: INTEGER_32): detachable WORLD_CELL
 		local
@@ -46,7 +24,7 @@ feature {NONE}
 			first := Void
 			across 0 |..| (num - 1) as i
 				loop
-					create cur.make (x_offset + l * i.item, y_offset, l, l)
+					create cur.make (Current, x_offset + l * i.item, y_offset, l, l)
 					if first = Void then
 						first := cur
 					end
@@ -59,6 +37,7 @@ feature {NONE}
 			Result := first
 		end
 
+	-- TODO: secure against infinite loops
 	glue(upper, lower: detachable WORLD_CELL)
 		local
 			cur_u: detachable WORLD_CELL
@@ -66,32 +45,49 @@ feature {NONE}
 		do
 			from cur_u := upper
 				 cur_l := lower
-				until cur_u = Void or cur_l = Void
-				loop
-					cur_u.set_down (cur_l)
-					cur_l.set_up (cur_u)
-					cur_u := cur_u.right
-					cur_l := cur_l.right
-				end
+			until cur_u = Void or cur_l = Void
+			loop
+				cur_u.set_down (cur_l)
+				cur_l.set_up (cur_u)
+				cur_u := cur_u.right
+				cur_l := cur_l.right
+			end
+		end
+
+	glue_cols(left, right: WORLD_CELL)
+		local
+			cur_l:   detachable WORLD_CELL
+			cur_r:   detachable WORLD_CELL
+			first_l: WORLD_CELL
+			first_r: WORLD_CELL
+		do
+			first_l := left
+			first_r := right
+			from cur_l := left
+				 cur_r := right
+			until cur_l = Void or cur_r = Void or first_l.up = cur_l or first_r.up = cur_r
+			loop
+				cur_l.set_right(cur_r)
+				cur_r.set_left(cur_l)
+				cur_l := cur_l.down
+				cur_r := cur_r.down
+			end
 		end
 
 feature
 	draw(surface: GAME_SURFACE)
 		local
-			cur_row: WORLD_CELL
-			cur:     WORLD_CELL
+			linear: LINEAR[WORLD_CELL]
 		do
-			from cur_row := top_left
-				until cur_row = Void
-				loop
-					from cur := cur_row
-						until cur = Void
-						loop
-							cur.draw(surface)
-							cur := cur.right
-						end
-					cur_row := cur_row.down
-				end
+			linear := dirties.linear_representation
+			from linear.start
+			until linear.exhausted
+			loop
+				linear.item.draw (surface)
+				linear.forth
+			end
+
+			dirties.wipe_out
 		end
 
 	put_at(x, y: INTEGER_32; drawable: DRAWABLE)
@@ -135,4 +131,11 @@ feature
 				end
 			Result := cur
 		end
+
+feature {WORLD_CELL}
+	add_dirty (cell: WORLD_CELL)
+		do
+			dirties.put(cell)
+		end
+
 end

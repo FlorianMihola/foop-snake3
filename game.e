@@ -30,7 +30,7 @@ feature {NONE}
 			mech_queue := 0
 			mech_step := 25 -- 1000 / second
 			game_state := "setup"
-			snake_length := 5
+			snake_length := 10
 			world_cols := 100
 			world_rows := 60
 
@@ -44,7 +44,7 @@ feature {NONE}
 			create surface.make_for_window (window, window.width, window.height)
 
 			-- setup game world etc
-			create world.make (world_rows, world_cols, l) --, surface)
+			world := create {ENDLESS_WORLD}.make (world_rows, world_cols, l)
 
 			-- player 1
 			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 0))

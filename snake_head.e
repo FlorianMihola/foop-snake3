@@ -121,6 +121,7 @@ feature
 
 	bite (force: NATURAL_32): EFFECT
 		do
+			-- todo: disable biting temporarily
 			snake.bite(force)
 
 			Result := create {NO_EFFECT}.make
