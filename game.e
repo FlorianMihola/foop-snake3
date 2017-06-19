@@ -72,15 +72,18 @@ feature {NONE}
 			player2.set_controller (player2_controller)
 
 			-- longer
---			if attached world.cell_at (10, 10) as wc then
---				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
---			end
---			if attached world.cell_at (10, 11) as wc then
---				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
---			end
---			if attached world.cell_at (10, 12) as wc then
---				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
---			end
+			if attached world.cell_at (10, 10) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (10, 11) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (10, 12) as wc then
+				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
+			if attached world.cell_at (10, 13) as wc then
+				wc.add_content (create {TEMPORARY_GROWTH_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
+			end
 
 			-- shorter
 --			if attached world.cell_at (30, 10) as wc then
@@ -94,13 +97,13 @@ feature {NONE}
 --			end
 
 			-- health down
---			if attached world.cell_at (60, 10) as wc then
---				wc.add_content (create {HEALING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
---			end
+			if attached world.cell_at (60, 10) as wc then
+				wc.add_content (create {HEALING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
+			end
 			-- health up
---			if attached world.cell_at (60, 12) as wc then
---				wc.add_content (create {POISON}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
---			end
+			if attached world.cell_at (60, 12) as wc then
+				wc.add_content (create {POISON}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
+			end
 
 			-- mirror
 --			if attached world.cell_at (snake_pos_offset + snake_length - 1, 40) as wc then

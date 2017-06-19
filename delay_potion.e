@@ -30,7 +30,7 @@ feature
 
 	bite (force: NATURAL_32): EFFECT
 		do
-			Result := create {DELAY_EFFECT}.make((40 * 5).as_natural_32)
+			Result := create {DELAY_EFFECT}.make((40 * 10).as_natural_32)
 			if attached cell as c then
 				c.remove_content (Current)
 			end

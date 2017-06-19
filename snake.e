@@ -75,7 +75,8 @@ feature
 	bite (force: NATURAL_32)
 		do
 			health := health - force.as_integer_32
-			io.put_string ("health is now ")
+			io.put_string (name)
+			io.put_string ("'s health is now ")
 			io.put_integer_32 (health)
 			io.put_new_line
 		end
