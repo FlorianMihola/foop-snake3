@@ -58,6 +58,7 @@ feature {NONE}
 				create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make),
 				4
 			)
+--			player1_controller := create {DELAYING_CONTROLLER}.make (player1_controller, 80)
 			player1.set_controller (player1_controller)
 
 			-- player 2
@@ -70,6 +71,7 @@ feature {NONE}
 			player2_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up)
 			player2.set_controller (player2_controller)
 
+			-- longer
 --			if attached world.cell_at (10, 10) as wc then
 --				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
 --			end
@@ -80,6 +82,7 @@ feature {NONE}
 --				wc.add_content (create {GROWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
 --			end
 
+			-- shorter
 --			if attached world.cell_at (30, 10) as wc then
 --				wc.add_content (create {SHRINKING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
 --			end
@@ -90,48 +93,58 @@ feature {NONE}
 --				wc.add_content (create {SHRINKING_POTION}.make (l, create {GAME_COLOR}.make_rgb (0, 0, 255)))
 --			end
 
+			-- health down
 --			if attached world.cell_at (60, 10) as wc then
 --				wc.add_content (create {HEALING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
 --			end
+			-- health up
 --			if attached world.cell_at (60, 12) as wc then
 --				wc.add_content (create {POISON}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 0)))
 --			end
 
+			-- mirror
 --			if attached world.cell_at (snake_pos_offset + snake_length - 1, 40) as wc then
 --				wc.add_content (create {CONFUSING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 255, 0)))
 --			end
 
---			if attached world.cell_at (30, 10) as wc then
---				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 11) as wc then
---				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 12) as wc then
---				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 13) as wc then
---				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 14) as wc then
---				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
+			-- speed up
+			if attached world.cell_at (30, 10) as wc then
+				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 11) as wc then
+				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 12) as wc then
+				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 13) as wc then
+				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 14) as wc then
+				wc.add_content (create {SPEED_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
 
---			if attached world.cell_at (30, 30) as wc then
---				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 31) as wc then
---				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 32) as wc then
---				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 33) as wc then
---				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
---			if attached world.cell_at (30, 34) as wc then
---				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
---			end
+			-- speed down
+			if attached world.cell_at (30, 30) as wc then
+				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 31) as wc then
+				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 32) as wc then
+				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 33) as wc then
+				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+			if attached world.cell_at (30, 34) as wc then
+				wc.add_content (create {SLOWING_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
+
+			-- delay
+			if attached world.cell_at (40, 10) as wc then
+				wc.add_content (create {DELAY_POTION}.make (l, create {GAME_COLOR}.make_rgb (255, 0, 255)))
+			end
 
 			-- setup input etc
 			game_library.quit_signal_actions.extend (agent on_quit)

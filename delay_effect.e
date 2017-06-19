@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {CONFUSION_EFFECT}."
+	description: "Summary description for {DELAY_EFFECT}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CONFUSION_EFFECT
+	DELAY_EFFECT
 
 inherit
 	EFFECT
@@ -26,9 +26,9 @@ feature
 	affect (snake: SNAKE)
 		do
 			if attached snake.controller as sc then
-				snake.set_controller(create {MIRROR_CONTROLLER}.make(sc))
+				snake.set_controller(create {DELAYING_CONTROLLER}.make(sc, 60))
 				io.put_string (snake.name)
-				io.put_string (" is now confused")
+				io.put_string (" will react with delay")
 				io.put_new_line
 				snake.add_effect(Current)
 			end
@@ -45,5 +45,5 @@ feature
 				io.put_new_line
 			end
 		end
-end
 
+end
