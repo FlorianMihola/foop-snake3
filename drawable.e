@@ -28,4 +28,9 @@ feature
 		do
 			Result := False
 		end
+
+	snake: detachable SNAKE
+		do
+			Result := Void
+		end
 end

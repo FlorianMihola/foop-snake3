@@ -19,10 +19,12 @@ feature {NONE}
 			window_builder: GAME_WINDOW_SURFACED_BUILDER
 			surface: GAME_SURFACE
 			l: INTEGER_32
-			player1_start_cell: detachable WORLD_CELL
-			player2_start_cell: detachable WORLD_CELL
+			snake_start_cell: detachable WORLD_CELL
 			snake_length: INTEGER_32
 			snake_pos_offset: INTEGER_32
+
+			snake: SNAKE
+			controller: CONTROLLER
 
 			red, green, blue, white, yellow, violet: GAME_COLOR
 		do
@@ -33,14 +35,18 @@ feature {NONE}
 			snake_length := 10
 			world_cols := 50
 			world_rows := 30
+			game_time := (40 * 60).as_natural_32
 
 			snake_pos_offset := 5
 
-			spawn_max_delay := (40 * 15).as_natural_32
+			spawn_max_delay := (40 * 6).as_natural_32
 			spawn_countdown := 0
 			create spawnables.make
 			create rand.make
 			-- TODO: seed (current time?)
+
+			create players.make
+			create controllers.make
 
 			-- colors
 			create red.make_rgb    (255,   0,   0)
@@ -253,34 +259,49 @@ feature {NONE}
 			world := create {ENDLESS_WORLD}.make (world_rows, world_cols, l)
 
 			-- player 1
-			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 0))
-			player1.set_name("Player One")
-			player1_start_cell := world.cell_at (snake_pos_offset, snake_pos_offset)
-			if attached player1_start_cell as p1sc then
-				player1.set_cell (p1sc, create {DIRECTION}.make_left)
+			create snake.make (l, snake_length.as_natural_32, green)
+			snake.set_name("Player One")
+			snake_start_cell := world.cell_at (snake_pos_offset, snake_pos_offset)
+			if attached snake_start_cell as p1sc then
+				snake.set_cell (p1sc, create {DIRECTION}.make_left)
 			end
-			player1_controller := create {SLOW_CONTROLLER}.make(
+			controller := create {SLOW_CONTROLLER}.make(
 				create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make),
 				4
 			)
-			player1.set_controller (player1_controller)
+			snake.set_controller (controller)
+			controllers.put_right(controller)
+			players.put_right(snake)
 
 			-- player 2
-			create player2.make(l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (255, 0, 0))
-			player2.set_name("Enemy")
-			player2_start_cell := world.cell_at (world_cols - snake_pos_offset - 1, world_rows - snake_pos_offset - 1)
-			if attached player2_start_cell as p2sc then
-				player2.set_cell (p2sc, create {DIRECTION}.make_down)
+			create snake.make (l, snake_length.as_natural_32, blue)
+			snake.set_name("Player Two")
+			snake_start_cell := world.cell_at (world_cols - snake_pos_offset - 1, world_rows - snake_pos_offset - 1)
+			if attached snake_start_cell as p1sc then
+				snake.set_cell (p1sc, create {DIRECTION}.make_left)
 			end
---			player2_controller := create {SLOW_CONTROLLER}.make(
---						create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up),
---						4
---					)
-			player2_controller := create {SLOW_CONTROLLER}.make(
-						create {SAFETY_CONTROLLER}.make (create {IJKL_CONTROLLER}.make),
-						4
-					)
-			player2.set_controller (player2_controller)
+			controller := create {SLOW_CONTROLLER}.make(
+				create {SAFETY_CONTROLLER}.make (create {IJKL_CONTROLLER}.make),
+				4
+			)
+			snake.set_controller (controller)
+			controllers.put_right(controller)
+			players.put_right(snake)
+
+			-- enemy
+			create snake.make (l, snake_length.as_natural_32, red)
+			snake.set_name("Enemy Snake")
+			snake_start_cell := world.cell_at (world_cols - 1, world_rows - 1)
+			if attached snake_start_cell as p1sc then
+				snake.set_cell (p1sc, create {DIRECTION}.make_left)
+			end
+			controller := create {SLOW_CONTROLLER}.make(
+				create {AVOIDING_LEFT_CONTROLLER}.make (snake, create {DIRECTION}.make_up),
+				4
+			)
+			snake.set_controller (controller)
+			controllers.put_right(controller)
+			players.put_right(snake)
 
 			-- setup input etc
 			game_library.quit_signal_actions.extend (agent on_quit)
@@ -300,6 +321,8 @@ feature {NONE}
 	world_cols: INTEGER_32
 	world_rows: INTEGER_32
 
+	game_time: NATURAL_32
+
 	rand: RANDOM
 	spawn_max_delay: NATURAL_32
 	spawnables: LINKED_LIST[TUPLE[image: ARRAY2[detachable GAME_COLOR]; effect: EFFECT]]
@@ -309,11 +332,8 @@ feature {NONE}
 
 	game_state: STRING
 
-	player1: SNAKE
-	player1_controller: CONTROLLER
-
-	player2: SNAKE
-	player2_controller: CONTROLLER
+	players: LINKED_LIST[SNAKE]
+	controllers: LINKED_LIST[CONTROLLER]
 
 	mech_step:             NATURAL_32
 	mech_queue:            NATURAL_32
@@ -334,14 +354,18 @@ feature {NONE}
 				end
 			end
 
-			player1_controller.on_key_up (timestamp, key_state)
-			player2_controller.on_key_up (timestamp, key_state)
+			across controllers as controller
+			loop
+				controller.item.on_key_up (timestamp, key_state)
+			end
 		end
 
 	on_key_down(timestamp: NATURAL_32; key_state: GAME_KEY_STATE)
 		do
-			player1_controller.on_key_down (timestamp, key_state)
-			player2_controller.on_key_down (timestamp, key_state)
+			across controllers as controller
+			loop
+				controller.item.on_key_down (timestamp, key_state)
+			end
 		end
 
 	pause
@@ -359,6 +383,7 @@ feature {NONE}
 	step(timestamp: NATURAL_32)
 		local
 			rand_x, rand_y, rand_i: INTEGER_32
+			best_player: detachable SNAKE
 		do
 			if attached last_tick as lt then
 				mech_queue := mech_queue + (timestamp - lt)
@@ -389,11 +414,56 @@ feature {NONE}
 							spawn_countdown := spawn_countdown - 1
 						end
 
-						player1.move
-						player2.move
+						across players as player
+						loop
+							player.item.move
+						end
 
-						player1.update
-						player2.update
+						across players as player
+						loop
+							player.item.update
+						end
+
+						game_time := (game_time - 1).as_natural_32
+						if game_time = 0 then
+							io.put_string ("Game Over")
+							io.put_new_line
+
+							best_player := Void
+
+							across players as player
+							loop
+								io.put_string(player.item.name)
+								if player.item.score > 0 then
+									io.put_string (" scored ")
+									io.put_integer_32(player.item.score)
+								else
+									io.put_string (" is dead")
+								end
+								io.put_new_line
+
+								if player.item.score > 0 then
+									if attached best_player as bp then
+										if player.item.score > bp.score then
+											best_player := player.item
+										end
+									else
+										best_player := player.item
+									end
+								end
+							end
+
+							if attached best_player as bp then
+								io.put_string (bp.name)
+								io.put_string (" won!")
+								io.put_new_line
+							else
+								io.put_string ("Everybody died")
+								io.put_new_line
+							end
+
+							game_state := "game over"
+						end
 					end
 					mech_queue := mech_queue - mech_step
 				end

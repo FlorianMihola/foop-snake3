@@ -81,15 +81,4 @@ feature
 			end
 		end
 
-	die
-		do
-			if attached successor as s then
-				s.die
-				successor := Void
-			end
-			if attached cell as c then
-				c.remove_content (Current)
-			end
-		end
-
 end

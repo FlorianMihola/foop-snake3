@@ -17,7 +17,7 @@ feature
 			create effects.make
 			create name.make_empty
 			head.grow ((num - 1).as_integer_32)
-			health := 50
+			health := 15
 		end
 
 	set_cell(head_cell: WORLD_CELL; direction: DIRECTION)
@@ -37,10 +37,12 @@ feature
 
 	move
 		do
-			if attached controller as c then
-				c.step
-				if not c.direction.is_stop then
-					head.move(c.direction)
+			if health > 0 then
+				if attached controller as c then
+					c.step
+					if not c.direction.is_stop then
+						head.move(c.direction)
+					end
 				end
 			end
 		end
@@ -49,16 +51,30 @@ feature
 		local
 			reverts: LINKED_LIST[EFFECT]
 		do
-			effects.step
+			if health > 0 then
+				effects.step
 
-			reverts := effects.due
-			from reverts.start
-			until reverts.exhausted
-			loop
-				reverts.item.revert (Current)
-				reverts.forth
+				reverts := effects.due
+				from reverts.start
+				until reverts.exhausted
+				loop
+					reverts.item.revert (Current)
+					reverts.forth
+				end
+
+				if head.touches_other then
+					if not touching then
+						(create {SPEED_UP_EFFECT}.make).affect(Current)
+						(create {HEALTH_EFFECT}.make (3)).affect(Current)
+					end
+					touching := True
+				elseif touching then
+					(create {SLOWING_EFFECT}.make).affect(Current)
+					touching := False
+				end
+
+				head.update
 			end
-			head.update
 		end
 
 	bite (force: NATURAL_32)
@@ -69,7 +85,7 @@ feature
 			if damage < 0 then
 				damage := 0
 			end
-			damage := damage + 3
+			damage := damage + 10
 
 			heal(-damage)
 		end
@@ -85,13 +101,22 @@ feature
 		do
 			health := health + h
 			if health <= 0 then
-
+				die
 			else
 				io.put_string (name)
 				io.put_string ("'s health is now ")
 				io.put_integer_32 (health)
 				io.put_new_line
 			end
+		end
+
+	die
+		do
+			io.put_string (name)
+			io.put_string (" died.")
+			io.put_new_line
+			head.die
+			health := 0
 		end
 
 	set_name(n: STRING)
@@ -106,6 +131,15 @@ feature
 			effects.add (effect)
 		end
 
+	score: INTEGER_32
+		do
+			if health > 0 then
+				Result := (head.successors + 1).as_integer_32
+			else
+				Result := -1
+			end
+		end
+
 feature {AVOIDING_LEFT_CONTROLLER}
 	head: SNAKE_HEAD
 
@@ -113,4 +147,6 @@ feature {NONE}
 	health: INTEGER_32
 
 	effects: EFFECTS_QUEUE
+
+	touching: BOOLEAN
 end
