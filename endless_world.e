@@ -48,7 +48,6 @@ feature
 
 			if attached top_right as tr then
 				if attached top_left as tl then
-					print("glueing cols%N")
 					glue_cols(tr, tl)
 				end
 			end

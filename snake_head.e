@@ -8,11 +8,10 @@ class
 	SNAKE_HEAD
 
 inherit
-	DRAWABLE
+	SNAKE_PART
 		redefine
 			bite
 		end
---	UPDATABLE
 
 create
 	make
@@ -24,6 +23,7 @@ feature
 			color := col
 			snake := s
 			movement_status := "ok"
+			can_bite := True
 		end
 
 	draw(x_offset, y_offset: INTEGER_32; surface: GAME_SURFACE)
@@ -121,7 +121,6 @@ feature
 
 	bite (force: NATURAL_32): EFFECT
 		do
-			-- todo: disable biting temporarily
 			snake.bite(force)
 
 			Result := create {NO_EFFECT}.make
@@ -130,7 +129,11 @@ feature
 	update
 		local
 			others: LINKED_LIST [DRAWABLE]
+			force: NATURAL_32
+			hit_other_snake: BOOLEAN
 		do
+			hit_other_snake := False
+			force := successors
 			if attached cell as c then
 				others := c.other_content (Current)
 				from
@@ -138,17 +141,21 @@ feature
 				until
 					others.exhausted
 				loop
-					others.item.bite (10).affect (snake) -- todo: calculate force
+					if not others.item.is_snake or can_bite then
+						others.item.bite(force).affect(snake)
+					end
+					hit_other_snake := hit_other_snake or others.item.is_snake
 					others.forth
 				end
 			end
+			can_bite := not hit_other_snake
 		end
 
 	grow (growth: INTEGER_32)
 		do
 			grow_by := grow_by + growth
 			if attached successor as s then
-				if grow_by + s.successors < 0 then
+				if grow_by + s.successors.as_integer_32 < 0 then
 					s.die
 					successor := Void
 				else
@@ -162,14 +169,7 @@ feature
 		end
 
 feature {NONE}
-	l: INTEGER_32 -- width and height of single cell
-
-	color: GAME_COLOR
-
 	movement_status: STRING -- TODO
 
-	snake: SNAKE
-
-	successor: detachable BODY_SEGMENT
-	grow_by: INTEGER_32
+	can_bite: BOOLEAN
 end

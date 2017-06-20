@@ -20,14 +20,6 @@ feature
 			health := 50
 		end
 
-	do_move(direction: DIRECTION)
-		local
-			prev_cell: WORLD_CELL
-		do
-			prev_cell := head.cell
-			head.move (direction)
-		end
-
 	set_cell(head_cell: WORLD_CELL; direction: DIRECTION)
 		do
 			head_cell.add_content (head)
@@ -48,7 +40,7 @@ feature
 			if attached controller as c then
 				c.step
 				if not c.direction.is_stop then
-					do_move (c.direction)
+					head.move(c.direction)
 				end
 			end
 		end
@@ -73,8 +65,16 @@ feature
 		end
 
 	bite (force: NATURAL_32)
+		local
+			damage: INTEGER_32
 		do
-			health := health - force.as_integer_32
+			damage := force.as_integer_32 - head.successors.as_integer_32
+			if damage < 0 then
+				damage := 0
+			end
+			damage := damage + 3
+
+			health := health - damage
 			io.put_string (name)
 			io.put_string ("'s health is now ")
 			io.put_integer_32 (health)
@@ -91,6 +91,10 @@ feature
 	heal (h: INTEGER_32)
 		do
 			health := health + h
+			io.put_string (name)
+			io.put_string ("'s health is now ")
+			io.put_integer_32 (health)
+			io.put_new_line
 		end
 
 	set_name(n: STRING)

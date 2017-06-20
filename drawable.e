@@ -23,4 +23,9 @@ feature
 		do
 			Result := create {NO_EFFECT}.make
 		end
+
+	is_snake: BOOLEAN
+		do
+			Result := False
+		end
 end

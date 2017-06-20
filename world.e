@@ -126,7 +126,7 @@ feature
 			across 1 |..| y as i
 				loop
 					if attached cur as c then
-						cur := cur.down
+						cur := c.down
 					end
 				end
 			Result := cur

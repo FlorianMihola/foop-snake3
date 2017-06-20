@@ -8,8 +8,7 @@ class
 	BODY_SEGMENT
 
 inherit
-
-	DRAWABLE
+	SNAKE_PART
 		redefine
 			bite
 		end
@@ -72,7 +71,7 @@ feature
 		do
 			grow_by := grow_by + growth
 			if attached successor as s then
-				if grow_by + s.successors < 0 then
+				if grow_by + s.successors.as_integer_32 < 0 then
 					s.die
 					successor := Void
 				else
@@ -92,26 +91,5 @@ feature
 				c.remove_content (Current)
 			end
 		end
-
-	successors: INTEGER_32
-		do
-			if attached successor as s then
-				Result := 1 + s.successors
-			else
-				Result := 0
-			end
-		end
-
-feature {NONE}
-
-	l: INTEGER_32
-
-	color: GAME_COLOR
-
-	snake: SNAKE
-
-	successor: detachable BODY_SEGMENT
-
-	grow_by: INTEGER_32
 
 end
