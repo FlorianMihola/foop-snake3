@@ -1,4 +1,7 @@
-A simple snake game in Eiffel. Work In Progress!
+A simple snake game in Eiffel in which you
+try to bite other snakes. With Powerups.
+
+Work in Progress!
 
 # Build
 
@@ -14,7 +17,10 @@ Run EiffelStudio from a shell in order to see command line output
 
     estudio
 
-and run the program.
+and run the program or run from the command line
 
-WASD keys move the green snake. On start the game is paused.
+    ./EIFGENs/foop-snake/W_code/foop-snake
+
+WASD keys move the green snake. IJKL keys move blue snake.
+On start the game is paused.
 Press space to start.
