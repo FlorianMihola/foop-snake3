@@ -55,9 +55,6 @@ feature
 			from reverts.start
 			until reverts.exhausted
 			loop
---				io.put_string ("reverting ")
---				print(reverts.item)
---				io.put_new_line
 				reverts.item.revert (Current)
 				reverts.forth
 			end
@@ -74,11 +71,7 @@ feature
 			end
 			damage := damage + 3
 
-			health := health - damage
-			io.put_string (name)
-			io.put_string ("'s health is now ")
-			io.put_integer_32 (health)
-			io.put_new_line
+			heal(-damage)
 		end
 
 	controller: detachable CONTROLLER
@@ -91,10 +84,14 @@ feature
 	heal (h: INTEGER_32)
 		do
 			health := health + h
-			io.put_string (name)
-			io.put_string ("'s health is now ")
-			io.put_integer_32 (health)
-			io.put_new_line
+			if health <= 0 then
+
+			else
+				io.put_string (name)
+				io.put_string ("'s health is now ")
+				io.put_integer_32 (health)
+				io.put_new_line
+			end
 		end
 
 	set_name(n: STRING)

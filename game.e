@@ -34,12 +34,13 @@ feature {NONE}
 			world_cols := 50
 			world_rows := 30
 
-			snake_pos_offset := 10
+			snake_pos_offset := 5
 
 			spawn_max_delay := (40 * 15).as_natural_32
 			spawn_countdown := 0
 			create spawnables.make
 			create rand.make
+			-- TODO: seed (current time?)
 
 			-- colors
 			create red.make_rgb    (255,   0,   0)
@@ -225,9 +226,6 @@ feature {NONE}
 				shrink.put (white, j.item, i.item)
 			end end
 
---speed_up, speed_down, grow, shrink, grow_temp
-
-
 			io.put_string ("done")
 			io.put_new_line
 
@@ -257,26 +255,31 @@ feature {NONE}
 			-- player 1
 			create player1.make (l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (0, 255, 0))
 			player1.set_name("Player One")
-			player1_start_cell := world.cell_at (snake_pos_offset + snake_length - 1, snake_pos_offset - 1)
+			player1_start_cell := world.cell_at (snake_pos_offset, snake_pos_offset)
 			if attached player1_start_cell as p1sc then
 				player1.set_cell (p1sc, create {DIRECTION}.make_left)
 			end
-			--player1_controller := create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make)
 			player1_controller := create {SLOW_CONTROLLER}.make(
 				create {SAFETY_CONTROLLER}.make (create {WASD_CONTROLLER}.make),
 				4
 			)
---			player1_controller := create {DELAYING_CONTROLLER}.make (player1_controller, 80)
 			player1.set_controller (player1_controller)
 
 			-- player 2
 			create player2.make(l, snake_length.as_natural_32, create {GAME_COLOR}.make_rgb (255, 0, 0))
 			player2.set_name("Enemy")
-			player2_start_cell := world.cell_at (snake_pos_offset + snake_length - 1 + 3, snake_pos_offset - 3)
+			player2_start_cell := world.cell_at (world_cols - snake_pos_offset - 1, world_rows - snake_pos_offset - 1)
 			if attached player2_start_cell as p2sc then
 				player2.set_cell (p2sc, create {DIRECTION}.make_down)
 			end
-			player2_controller := create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up)
+--			player2_controller := create {SLOW_CONTROLLER}.make(
+--						create {AVOIDING_LEFT_CONTROLLER}.make (player2, create {DIRECTION}.make_up),
+--						4
+--					)
+			player2_controller := create {SLOW_CONTROLLER}.make(
+						create {SAFETY_CONTROLLER}.make (create {IJKL_CONTROLLER}.make),
+						4
+					)
 			player2.set_controller (player2_controller)
 
 			-- setup input etc
@@ -311,11 +314,6 @@ feature {NONE}
 
 	player2: SNAKE
 	player2_controller: CONTROLLER
-
---	block1: BLOCK
---	block2: BLOCK
---	block3: BLOCK
---	block4: BLOCK
 
 	mech_step:             NATURAL_32
 	mech_queue:            NATURAL_32
@@ -376,7 +374,6 @@ feature {NONE}
 							spawn_countdown := (rand.item \\ (spawn_max_delay.as_integer_32 + 1)).as_natural_32
 							rand.forth
 
-							print("spawn something!%N")
 							rand_x := rand.item \\ world_cols
 							rand.forth
 							rand_y := rand.item \\ world_rows
