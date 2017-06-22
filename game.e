@@ -27,6 +27,8 @@ feature {NONE}
 			controller: CONTROLLER
 
 			red, green, blue, white, yellow, violet: GAME_COLOR
+
+			now: TIME
 		do
 			l := 16
 			mech_queue := 0
@@ -40,10 +42,15 @@ feature {NONE}
 			snake_pos_offset := 5
 
 			spawn_max_delay := (40 * 6).as_natural_32
+			spawn_min_delay := (20).as_natural_32
+			despawn_max_delay := (40 * 20)
+			despawn_min_delay := (40 * 5)
 			spawn_countdown := 0
 			create spawnables.make
+			create potions.make
 			create rand.make
-			-- TODO: seed (current time?)
+			create now.make_now
+			rand.set_seed (now.milli_second + now.second * 1000 + now.minute * 60 * 1000)
 
 			create players.make
 			create controllers.make
@@ -324,9 +331,11 @@ feature {NONE}
 	game_time: NATURAL_32
 
 	rand: RANDOM
-	spawn_max_delay: NATURAL_32
+	spawn_max_delay, spawn_min_delay: NATURAL_32
+	despawn_max_delay, despawn_min_delay: INTEGER_32
 	spawnables: LINKED_LIST[TUPLE[image: ARRAY2[detachable GAME_COLOR]; effect: EFFECT]]
 	spawn_countdown: NATURAL_32
+	potions: LINKED_LIST[POTION]
 
 	health_up, health_down, speed_up, speed_down, grow, shrink, grow_temp, confusion, delay: ARRAY2[detachable GAME_COLOR]
 
@@ -384,6 +393,8 @@ feature {NONE}
 		local
 			rand_x, rand_y, rand_i: INTEGER_32
 			best_player: detachable SNAKE
+			potion: detachable POTION
+			despawn_countdown: INTEGER_32
 		do
 			if attached last_tick as lt then
 				mech_queue := mech_queue + (timestamp - lt)
@@ -396,7 +407,8 @@ feature {NONE}
 				loop
 					if game_state.is_equal ("running") then
 						if spawn_countdown = 0 then
-							spawn_countdown := (rand.item \\ (spawn_max_delay.as_integer_32 + 1)).as_natural_32
+							spawn_countdown := spawn_min_delay +
+								(rand.item \\ ((spawn_max_delay - spawn_min_delay).as_integer_32 + 1)).as_natural_32
 							rand.forth
 
 							rand_x := rand.item \\ world_cols
@@ -407,8 +419,20 @@ feature {NONE}
 							rand_i := rand.item \\ spawnables.count
 							rand.forth
 
+							despawn_countdown := despawn_min_delay +
+								rand.item \\ ((despawn_max_delay - despawn_min_delay).as_integer_32 + 1)
+							rand.forth
+
+							potion := create {POTION}.make( spawnables.i_th (rand_i + 1).image
+							                              , spawnables.i_th (rand_i + 1).effect
+								                          , despawn_countdown
+								                          )
+
 							if attached world.cell_at (rand_x, rand_y) as wc then
-								wc.add_content (create {POTION}.make (spawnables.i_th (rand_i + 1).image, spawnables.i_th (rand_i + 1).effect))
+								if attached potion as p then
+									potions.put_front(p)
+									wc.add_content (p)
+								end
 							end
 						else
 							spawn_countdown := spawn_countdown - 1
@@ -422,6 +446,17 @@ feature {NONE}
 						across players as player
 						loop
 							player.item.update
+						end
+
+						from potions.start
+						until potions.exhausted
+						loop
+							if not potions.item.update then
+								potions.remove
+							end
+							if not potions.exhausted then
+								potions.forth
+							end
 						end
 
 						game_time := (game_time - 1).as_natural_32

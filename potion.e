@@ -17,10 +17,11 @@ create
 	make
 
 feature
-	make(img: ARRAY2[detachable GAME_COLOR]; e: EFFECT)
+	make(img: ARRAY2[detachable GAME_COLOR]; e: EFFECT; c: INTEGER_32)
 		do
 			image := img
 			effect := e
+			countdown := c
 		end
 
 	draw(x_offset, y_offset: INTEGER_32; surface: GAME_SURFACE)
@@ -39,14 +40,32 @@ feature
 	bite (force: NATURAL_32): EFFECT
 		do
 			Result := effect
-			if attached cell as c then
-				c.remove_content (Current)
+			die
+		end
+
+	update: BOOLEAN -- still alive?
+		do
+			Result := True
+			countdown := countdown - 1
+			if countdown < 0 then
+				die
+				Result := False
 			end
 		end
 
 feature {NONE}
+	die
+		do
+			if attached cell as c then
+				c.remove_content (Current)
+			end
+			countdown := 0
+		end
+
 	image: ARRAY2[detachable GAME_COLOR]
 
 	effect: EFFECT
+
+	countdown: INTEGER_32
 
 end

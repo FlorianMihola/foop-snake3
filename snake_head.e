@@ -169,7 +169,7 @@ feature
 		end
 
 feature {NONE}
-	movement_status: STRING -- TODO
+	movement_status: STRING
 
 	can_bite: BOOLEAN
 end
