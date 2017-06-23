@@ -96,4 +96,7 @@ feature {NONE}
 feature
 	snake: SNAKE
 
+invariant
+	grow_by_zero_if_successor: not (successor /= Void and grow_by > 0)
+
 end

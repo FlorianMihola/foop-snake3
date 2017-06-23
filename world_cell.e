@@ -12,6 +12,9 @@ create
 
 feature {NONE}
 	make(wrld: WORLD; xx, yy, ww, hh: INTEGER_32)
+		require
+			positive_width: ww > 0
+			positive_height: hh > 0
 		do
 			x := xx
 			y := yy
@@ -27,11 +30,6 @@ feature {NONE}
 			down  := Void
 
 			create contents.make
-
---			io.put_natural_32 (xx)
---			io.put_string (" ")
---			io.put_natural_32 (yy)
---			io.put_new_line
 		end
 
 	x: INTEGER_32
@@ -73,8 +71,6 @@ feature
 
 	add_content(content: DRAWABLE)
 		do
---			io.put_string("add content")
---			io.put_new_line
 			content.set_cell(Current)
 			contents.extend (content)
 			world.add_dirty (Current)
@@ -93,8 +89,6 @@ feature
 		do
 			create others.make
 			others.copy (contents)
---			print ("others copied")
---			print (others)
 			others.start
 			others.prune (content)
 			Result := others

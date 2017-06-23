@@ -45,4 +45,9 @@ feature {NONE}
 	delay: NATURAL_32
 
 	queue: BOUNDED_QUEUE[DIRECTION]
+
+invariant
+	queue_always_filled_for_delay: queue.count.is_equal(delay.as_integer_32)
+	queue_always_full: queue.full
+
 end

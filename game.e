@@ -243,15 +243,15 @@ feature {NONE}
 			io.put_new_line
 
 
-			spawnables.put_right ([health_up, create {HEALTH_EFFECT}.make (10)])
-			spawnables.put_right ([health_down, create {HEALTH_EFFECT}.make (-10)])
-			spawnables.put_right ([speed_up, create {SPEED_UP_EFFECT}.make])
-			spawnables.put_right ([speed_down, create {SLOWING_EFFECT}.make])
-			spawnables.put_right ([grow, create {GROWTH_EFFECT}.make (5)])
-			spawnables.put_right ([shrink, create {GROWTH_EFFECT}.make (-5)])
-			spawnables.put_right ([grow_temp, create {TEMPORARY_GROWTH_EFFECT}.make (20, (40 * 10).as_natural_32)])
+--			spawnables.put_right ([health_up, create {HEALTH_EFFECT}.make (10)])
+--			spawnables.put_right ([health_down, create {HEALTH_EFFECT}.make (-10)])
+--			spawnables.put_right ([speed_up, create {SPEED_UP_EFFECT}.make])
+--			spawnables.put_right ([speed_down, create {SLOWING_EFFECT}.make])
+--			spawnables.put_right ([grow, create {GROWTH_EFFECT}.make (5)])
+--			spawnables.put_right ([shrink, create {GROWTH_EFFECT}.make (-5)])
+--			spawnables.put_right ([grow_temp, create {TEMPORARY_GROWTH_EFFECT}.make (20, (40 * 10).as_natural_32)])
 			spawnables.put_right ([delay, create {DELAY_EFFECT}.make ((40 * 5).as_natural_32)])
-			spawnables.put_right ([confusion, create {CONFUSION_EFFECT}.make ((40 * 5).as_natural_32)])
+--			spawnables.put_right ([confusion, create {CONFUSION_EFFECT}.make ((40 * 5).as_natural_32)])
 			-- sudden death
 			-- random
 
