@@ -113,6 +113,9 @@ feature
 		end
 
 	cell_at(x, y: INTEGER_32): detachable WORLD_CELL
+		require
+			x_non_negative: x >= 0
+			y_non_negative: y >= 0
 		local
 			cur: WORLD_CELL
 		do

@@ -37,7 +37,7 @@ feature
 
 	move
 		do
-			if health > 0 then
+			if not dead then
 				if attached controller as c then
 					c.step
 					if not c.direction.is_stop then
@@ -51,7 +51,7 @@ feature
 		local
 			reverts: LINKED_LIST[EFFECT]
 		do
-			if health > 0 then
+			if not dead then
 				effects.step
 
 				reverts := effects.due
@@ -117,6 +117,13 @@ feature
 			io.put_new_line
 			head.die
 			health := 0
+		ensure
+			is_dead: dead
+		end
+
+	dead: BOOLEAN
+		do
+			Result := (health <= 0)
 		end
 
 	set_name(n: STRING)
@@ -133,7 +140,7 @@ feature
 
 	score: INTEGER_32
 		do
-			if health > 0 then
+			if not dead then
 				Result := (head.successors + 1).as_integer_32
 			else
 				Result := -1
