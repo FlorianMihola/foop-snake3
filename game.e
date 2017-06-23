@@ -239,21 +239,49 @@ feature {NONE}
 				shrink.put (white, j.item, i.item)
 			end end
 
+			-- L clock
+			-- circle
+			across 10|..| 12 as i
+			loop
+				grow_temp.put (white, 7, i.item)
+				grow_temp.put (white, 15, i.item)
+			end
+			across 10|..| 12 as j
+			loop
+				grow_temp.put (white, j.item, 15)
+			end
+			grow_temp.put (white, 9, 14)
+			grow_temp.put (white, 8, 13)
+			grow_temp.put (white, 8, 9)
+			grow_temp.put (white, 9, 8)
+			grow_temp.put (white, 10, 7)
+			grow_temp.put (white, 14, 9)
+			grow_temp.put (white, 13, 8)
+			grow_temp.put (white, 14, 13)
+			grow_temp.put (white, 13, 14)
+			-- hands
+			across 9 |..| 11 as i
+			loop
+				grow_temp.put (white, i.item, 11)
+			end
+			across 9 |..| 10 as i
+			loop
+				grow_temp.put (white, 11, i.item)
+			end
+
 			io.put_string ("done")
 			io.put_new_line
 
 
---			spawnables.put_right ([health_up, create {HEALTH_EFFECT}.make (10)])
---			spawnables.put_right ([health_down, create {HEALTH_EFFECT}.make (-10)])
---			spawnables.put_right ([speed_up, create {SPEED_UP_EFFECT}.make])
---			spawnables.put_right ([speed_down, create {SLOWING_EFFECT}.make])
---			spawnables.put_right ([grow, create {GROWTH_EFFECT}.make (5)])
---			spawnables.put_right ([shrink, create {GROWTH_EFFECT}.make (-5)])
---			spawnables.put_right ([grow_temp, create {TEMPORARY_GROWTH_EFFECT}.make (20, (40 * 10).as_natural_32)])
+			spawnables.put_right ([health_up, create {HEALTH_EFFECT}.make (10)])
+			spawnables.put_right ([health_down, create {HEALTH_EFFECT}.make (-10)])
+			spawnables.put_right ([speed_up, create {SPEED_UP_EFFECT}.make])
+			spawnables.put_right ([speed_down, create {SLOWING_EFFECT}.make])
+			spawnables.put_right ([grow, create {GROWTH_EFFECT}.make (5)])
+			spawnables.put_right ([shrink, create {GROWTH_EFFECT}.make (-5)])
+			spawnables.put_right ([grow_temp, create {TEMPORARY_GROWTH_EFFECT}.make (20, (40 * 10).as_natural_32)])
 			spawnables.put_right ([delay, create {DELAY_EFFECT}.make ((40 * 5).as_natural_32)])
 --			spawnables.put_right ([confusion, create {CONFUSION_EFFECT}.make ((40 * 5).as_natural_32)])
-			-- sudden death
-			-- random
 
 			-- setup window
 			create window_builder
