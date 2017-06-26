@@ -24,16 +24,9 @@ feature
 			d := effect.duration
 			found := False
 
---			print("trying to find correct place%N")
 			from data.start
 			until (found or data.exhausted)
 			loop
---				io.put_string("loop ")
---				io.put_natural_32 (d)
---				io.put_string (" ")
---				io.put_natural_32 (data.item.frames)
---				io.put_new_line
-
 				if d < data.item.frames then
 					data.put_left ([effect, d])
 					found := True

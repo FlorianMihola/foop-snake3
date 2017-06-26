@@ -31,13 +31,6 @@ feature
 			surface.draw_rectangle (color, x_offset + 2, y_offset + 2, l - 4, l - 4)
 		end
 
---	update
---		do
---			if attached controller as control then
---				move (control.direction)
---			end
---		end
-
 	move(direction: DIRECTION)
 		local
 			prev_cell: detachable WORLD_CELL

@@ -24,9 +24,6 @@ feature
 				if sc.steps < 8 then
 					sc.set_steps (sc.steps * 2)
 				end
---				io.put_string ("steps: ")
---				io.put_natural_32 (sc.steps)
---				io.put_new_line
 			end
 		end
 

@@ -14,7 +14,7 @@ create
 	make
 
 feature {NONE}
-	make
+	make (enemy: BOOLEAN)
 		local
 			window_builder: GAME_WINDOW_SURFACED_BUILDER
 			surface: GAME_SURFACE
@@ -324,19 +324,21 @@ feature {NONE}
 			players.put_right(snake)
 
 			-- enemy
-			create snake.make (l, snake_length.as_natural_32, red)
-			snake.set_name("Enemy Snake")
-			snake_start_cell := world.cell_at (world_cols - 1, world_rows - 1)
-			if attached snake_start_cell as p1sc then
-				snake.set_cell (p1sc, create {DIRECTION}.make_left)
+			if enemy then
+				create snake.make (l, snake_length.as_natural_32, red)
+				snake.set_name("Enemy Snake")
+				snake_start_cell := world.cell_at (world_cols - 1, world_rows - 1)
+				if attached snake_start_cell as p1sc then
+					snake.set_cell (p1sc, create {DIRECTION}.make_left)
+				end
+				controller := create {SLOW_CONTROLLER}.make(
+					create {AVOIDING_LEFT_CONTROLLER}.make (snake, create {DIRECTION}.make_up),
+					4
+				)
+				snake.set_controller (controller)
+				controllers.put_right(controller)
+				players.put_right(snake)
 			end
-			controller := create {SLOW_CONTROLLER}.make(
-				create {AVOIDING_LEFT_CONTROLLER}.make (snake, create {DIRECTION}.make_up),
-				4
-			)
-			snake.set_controller (controller)
-			controllers.put_right(controller)
-			players.put_right(snake)
 
 			-- setup input etc
 			game_library.quit_signal_actions.extend (agent on_quit)
