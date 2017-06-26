@@ -25,11 +25,6 @@ feature
 			head_cell.add_content (head)
 		end
 
-	status: STRING -- TODO: Replace STRINGs with something safer
-		do
-			Result := head.status
-		end
-
 	set_controller(control: CONTROLLER)
 		do
 			controller := control

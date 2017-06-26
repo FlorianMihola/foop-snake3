@@ -22,7 +22,6 @@ feature
 			l := ll
 			color := col
 			snake := s
-			movement_status := "ok"
 			can_bite := True
 		end
 
@@ -34,45 +33,46 @@ feature
 	move(direction: DIRECTION)
 		local
 			prev_cell: detachable WORLD_CELL
+			ok: BOOLEAN
 		do
 			prev_cell := cell
-			movement_status := "ok"
+			ok := true
 			if attached cell as c then
 				if direction.is_left then
 					if attached c.left as left then
 						c.remove_content (Current)
 						left.add_content (Current)
 					else
-						movement_status := "bumped into wall"
+						ok := false
 					end
 				elseif direction.is_right then
 					if attached c.right as right then
 						c.remove_content (Current)
 						right.add_content (Current)
 					else
-						movement_status := "bumped into wall"
+						ok := false
 					end
 				elseif direction.is_up then
 					if attached c.up as up then
 						c.remove_content (Current)
 						up.add_content (Current)
 					else
-						movement_status := "bumped into wall"
+						ok := false
 					end
 				elseif direction.is_down then
 					if attached c.down as down then
 						c.remove_content (Current)
 						down.add_content (Current)
 					else
-						movement_status := "bumped into wall"
+						ok := false
 					end
 				else
 					print ("Invalid direction%N")
-					movement_status := "invalid"
+					ok := false
 				end
 			end
 
-			if movement_status.is_equal("ok") then
+			if ok then
 				if attached prev_cell as pc then
 					if attached successor as s then
 						s.move (pc)
@@ -89,26 +89,6 @@ feature
 						end
 					end
 				end
-			end
-		end
-
-	status: STRING
-		local
-			others: LINKED_LIST [DRAWABLE]
-		do
-			if movement_status.is_equal ("bumped into wall") then
-				Result := "dead"
-			elseif attached cell as c then
-				others := c.other_content (Current)
---				print ("others in snake_head.status")
---				print (others)
-				if others.is_empty then
-					Result := "ok"
-				else
-					Result := "dead"
-				end
-			else
-				Result := "invalid"
 			end
 		end
 
@@ -162,7 +142,6 @@ feature
 		end
 
 feature {NONE}
-	movement_status: STRING
-
 	can_bite: BOOLEAN
+
 end
